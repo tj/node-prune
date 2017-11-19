@@ -136,7 +136,7 @@ func (p Pruner) Prune() (*Stats, error) {
 		})
 
 		if !p.prune(path, info) {
-			ctx.Debug("keeping")
+			ctx.Debug("keep")
 			return nil
 		}
 
