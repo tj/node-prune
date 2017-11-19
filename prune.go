@@ -25,8 +25,9 @@ var DefaultFiles = []string{
 	".flowconfig",
 	".documentup.json",
 	".yarn-metadata.json",
-	".*.yml",
-	"*.yml",
+	".travis.yml",
+	"LICENSE.txt",
+	"LICENSE",
 }
 
 // DefaultDirectories pruned.
