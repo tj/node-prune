@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"time"
 
 	"github.com/apex/log"
@@ -13,6 +14,7 @@ import (
 
 func init() {
 	log.SetHandler(cli.Default)
+	log.SetLevel(log.WarnLevel)
 }
 
 func main() {
@@ -39,10 +41,15 @@ func main() {
 		log.Fatalf("error: %s", err)
 	}
 
-	log.WithFields(log.Fields{
-		"files_total":   humanize.Comma(stats.FilesTotal),
-		"files_removed": humanize.Comma(stats.FilesRemoved),
-		"size_removed":  humanize.Bytes(uint64(stats.SizeRemoved)),
-		"duration":      time.Since(start).Round(time.Millisecond).String(),
-	}).Info("complete")
+	println()
+	defer println()
+
+	output("files_total", humanize.Comma(stats.FilesTotal))
+	output("files_removed", humanize.Comma(stats.FilesRemoved))
+	output("size_removed", humanize.Bytes(uint64(stats.SizeRemoved)))
+	output("duration", time.Since(start).Round(time.Millisecond).String())
+}
+
+func output(name, val string) {
+	fmt.Printf("\x1b[1m%20s\x1b[0m %s\n", name, val)
 }
