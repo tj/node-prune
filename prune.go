@@ -9,6 +9,12 @@ import (
 	"github.com/pkg/errors"
 )
 
+// DefaultExtensions pruned.
+var DefaultExtensions = []string{
+	".md",
+	".ts",
+}
+
 // Stats for a prune.
 type Stats struct {
 	FilesTotal   int64
@@ -18,8 +24,9 @@ type Stats struct {
 
 // Pruner is a module pruner.
 type Pruner struct {
-	dir string
-	log log.Interface
+	dir  string
+	log  log.Interface
+	exts map[string]struct{}
 }
 
 // Option function.
@@ -27,10 +34,16 @@ type Option func(*Pruner)
 
 // New with the given options.
 func New(options ...Option) *Pruner {
-	v := &Pruner{dir: "node_modules", log: log.Log}
+	v := &Pruner{
+		dir:  "node_modules",
+		log:  log.Log,
+		exts: toMap(DefaultExtensions),
+	}
+
 	for _, o := range options {
 		o(v)
 	}
+
 	return v
 }
 
@@ -38,6 +51,13 @@ func New(options ...Option) *Pruner {
 func WithDir(s string) Option {
 	return func(v *Pruner) {
 		v.dir = s
+	}
+}
+
+// WithExtensions option.
+func WithExtensions(s []string) Option {
+	return func(v *Pruner) {
+		v.exts = toMap(s)
 	}
 }
 
@@ -81,5 +101,15 @@ func (p Pruner) prune(path string, info os.FileInfo) bool {
 	}
 
 	ext := filepath.Ext(path)
-	return ext == ".ts" || ext == ".md"
+	_, ok := p.exts[ext]
+	return ok
+}
+
+// toMap returns a map from slice.
+func toMap(s []string) map[string]struct{} {
+	m := make(map[string]struct{})
+	for _, v := range s {
+		m[v] = struct{}{}
+	}
+	return m
 }
