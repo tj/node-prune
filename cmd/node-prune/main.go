@@ -26,7 +26,13 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	p := prune.New(prune.WithDir(dir))
+	var options []prune.Option
+
+	if dir != "" {
+		options = append(options, prune.WithDir(dir))
+	}
+
+	p := prune.New(options...)
 
 	stats, err := p.Prune()
 	if err != nil {
