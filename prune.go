@@ -151,6 +151,14 @@ func (p Pruner) Prune() (*Stats, error) {
 		stats.FilesRemoved++
 		stats.SizeRemoved += info.Size()
 
+		// dir stats
+		if info.IsDir() {
+			s, _ := dirStats(path)
+			stats.FilesTotal += s.FilesTotal
+			stats.FilesRemoved += s.FilesRemoved
+			stats.SizeRemoved += s.SizeRemoved
+		}
+
 		// remove and skip dir
 		if info.IsDir() {
 			if err := os.RemoveAll(path); err != nil {
@@ -188,6 +196,20 @@ func (p Pruner) prune(path string, info os.FileInfo) bool {
 	ext := filepath.Ext(path)
 	_, ok = p.exts[ext]
 	return ok
+}
+
+// dirStats returns stats for files in dir.
+func dirStats(dir string) (*Stats, error) {
+	var stats Stats
+
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		stats.FilesTotal++
+		stats.FilesRemoved++
+		stats.SizeRemoved += info.Size()
+		return err
+	})
+
+	return &stats, err
 }
 
 // toMap returns a map from slice.
