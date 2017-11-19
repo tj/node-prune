@@ -9,7 +9,28 @@ import (
 	"github.com/pkg/errors"
 )
 
+// DefaultDirectories pruned.
+//
+// Copied from yarn (mostly).
+var DefaultDirectories = []string{
+	"__tests__",
+	"test",
+	"tests",
+	"powered-test",
+	"docs",
+	"doc",
+	"website",
+	"images",
+	"assets",
+	"example",
+	"examples",
+	"coverage",
+	".nyc_output",
+}
+
 // DefaultExtensions pruned.
+//
+// Copied from yarn (mostly).
 var DefaultExtensions = []string{
 	".md",
 	".ts",
@@ -26,6 +47,7 @@ type Stats struct {
 type Pruner struct {
 	dir  string
 	log  log.Interface
+	dirs map[string]struct{}
 	exts map[string]struct{}
 }
 
@@ -58,6 +80,13 @@ func WithDir(s string) Option {
 func WithExtensions(s []string) Option {
 	return func(v *Pruner) {
 		v.exts = toMap(s)
+	}
+}
+
+// WithDirectories option.
+func WithDirectories(s []string) Option {
+	return func(v *Pruner) {
+		v.dirs = toMap(s)
 	}
 }
 
@@ -97,7 +126,8 @@ func (p Pruner) Prune() (*Stats, error) {
 // prune returns true if the file or dir should be pruned.
 func (p Pruner) prune(path string, info os.FileInfo) bool {
 	if info.IsDir() {
-		return false
+		_, ok := p.dirs[info.Name()]
+		return ok
 	}
 
 	ext := filepath.Ext(path)
