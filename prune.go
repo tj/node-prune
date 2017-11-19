@@ -4,6 +4,7 @@ package prune
 import (
 	"os"
 	"sync"
+	"runtime"
 	"path/filepath"
 
 	"github.com/apex/log"
@@ -76,6 +77,13 @@ type Pruner struct {
 	files map[string]struct{}
 }
 
+type DataObject struct {
+	path string
+	info os.FileInfo
+	wg *sync.WaitGroup
+	errorChan chan<- error
+}
+
 // Option function.
 type Option func(*Pruner)
 
@@ -130,6 +138,13 @@ func (p Pruner) Prune() (*Stats, error) {
 	var wg sync.WaitGroup
 	errorChan := make(chan error)
 	done := make(chan bool)
+	// data channel carries object details for deletion
+	data := make(chan *DataObject)
+
+	// spawn go routines to delete dataObject passed on data channel
+	for i:=0 ; i<runtime.NumCPU(); i++ {
+		go delete_handler(data)
+	}
 
 	err := filepath.Walk(p.dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -163,9 +178,10 @@ func (p Pruner) Prune() (*Stats, error) {
 			stats.SizeRemoved += s.SizeRemoved
 		}
 
-		// spawn fo routine to do the removal
+		// spawn go routine to do the removal
 		wg.Add(1)
-		go p.remove(path, info, &wg, errorChan)
+		// create data object and pass it to data channel for deletion
+		data <- &DataObject{path, info, &wg, errorChan}
 
 		// avoid traversing of dir to be removed anyway
 		if info.IsDir() {
@@ -212,7 +228,7 @@ func (p Pruner) prune(path string, info os.FileInfo) bool {
 	return ok
 }
 
-func (p Pruner) remove(path string, info os.FileInfo, wg *sync.WaitGroup, errorChan chan<- error) {
+func remove(path string, info os.FileInfo, wg *sync.WaitGroup, errorChan chan<- error) {
 	// remove and skip dir
 	if info.IsDir() {
 		if err := os.RemoveAll(path); err != nil {
@@ -231,6 +247,13 @@ func (p Pruner) remove(path string, info os.FileInfo, wg *sync.WaitGroup, errorC
 
 	// removal done for given path
 	wg.Done()
+}
+
+func delete_handler(dataChan <-chan *DataObject)  {
+	// consume from dataChan and delete files or dir one after another
+	for data := range dataChan {
+		remove(data.path, data.info, data.wg, data.errorChan)
+	}
 }
 
 // dirStats returns stats for files in dir.
