@@ -19,7 +19,6 @@ var DefaultFiles = []string{
 	".tern-project",
 	".gitattributes",
 	".editorconfig",
-	".*ignore",
 	".eslintrc",
 	".jshintrc",
 	".flowconfig",
@@ -50,8 +49,6 @@ var DefaultDirectories = []string{
 }
 
 // DefaultExtensions pruned.
-//
-// Copied from yarn (mostly).
 var DefaultExtensions = []string{
 	".md",
 	".ts",
@@ -132,7 +129,11 @@ func (p Pruner) Prune() (*Stats, error) {
 
 		stats.FilesTotal++
 
-		ctx := p.log.WithField("path", path)
+		ctx := p.log.WithFields(log.Fields{
+			"path": path,
+			"size": info.Size(),
+			"dir":  info.IsDir(),
+		})
 
 		if !p.prune(path, info) {
 			ctx.Debug("keeping")
