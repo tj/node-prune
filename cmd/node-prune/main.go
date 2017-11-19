@@ -44,9 +44,9 @@ func main() {
 	println()
 	defer println()
 
-	output("files_total", humanize.Comma(stats.FilesTotal))
-	output("files_removed", humanize.Comma(stats.FilesRemoved))
-	output("size_removed", humanize.Bytes(uint64(stats.SizeRemoved)))
+	output("files total", humanize.Comma(stats.FilesTotal))
+	output("files removed", humanize.Comma(stats.FilesRemoved))
+	output("size removed", humanize.Bytes(uint64(stats.SizeRemoved)))
 	output("duration", time.Since(start).Round(time.Millisecond).String())
 }
 
