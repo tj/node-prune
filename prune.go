@@ -136,10 +136,7 @@ func WithFiles(s []string) Option {
 func (p *Pruner) Prune() (*Stats, error) {
 	var stats Stats
 
-	for i := 0; i < runtime.NumCPU(); i++ {
-		p.wg.Add(1)
-		go p.start()
-	}
+	p.startN(runtime.NumCPU())
 	defer p.stop()
 
 	err := filepath.Walk(p.dir, func(path string, info os.FileInfo, err error) error {
@@ -216,6 +213,14 @@ func (p *Pruner) prune(path string, info os.FileInfo) bool {
 	ext := filepath.Ext(path)
 	_, ok := p.exts[ext]
 	return ok
+}
+
+// startN starts n loops.
+func (p *Pruner) startN(n int) {
+	for i := 0; i < n; i++ {
+		p.wg.Add(1)
+		go p.start()
+	}
 }
 
 // start loop.
