@@ -3,6 +3,8 @@ package prune
 
 import (
 	"os"
+	"sync"
+	"runtime"
 	"path/filepath"
 
 	"github.com/apex/log"
@@ -78,6 +80,13 @@ type Pruner struct {
 	files map[string]struct{}
 }
 
+type DataObject struct {
+	path string
+	info os.FileInfo
+	wg *sync.WaitGroup
+	errorChan chan<- error
+}
+
 // Option function.
 type Option func(*Pruner)
 
@@ -129,6 +138,16 @@ func WithFiles(s []string) Option {
 // Prune performs the pruning.
 func (p Pruner) Prune() (*Stats, error) {
 	var stats Stats
+	var wg sync.WaitGroup
+	errorChan := make(chan error)
+	done := make(chan bool)
+	// data channel carries object details for deletion
+	data := make(chan *DataObject)
+
+	// spawn go routines to delete dataObject passed on data channel
+	for i:=0 ; i<runtime.NumCPU(); i++ {
+		go delete_handler(data)
+	}
 
 	err := filepath.Walk(p.dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -162,23 +181,34 @@ func (p Pruner) Prune() (*Stats, error) {
 			stats.SizeRemoved += s.SizeRemoved
 		}
 
-		// remove and skip dir
+		// spawn go routine to do the removal
+		wg.Add(1)
+		// create data object and pass it to data channel for deletion
+		data <- &DataObject{path, info, &wg, errorChan}
+
+		// avoid traversing of dir to be removed anyway
 		if info.IsDir() {
-			if err := os.RemoveAll(path); err != nil {
-				return errors.Wrap(err, "removing dir")
-			}
 			return filepath.SkipDir
 		}
-
-		// remove file
-		if err := os.Remove(path); err != nil {
-			return errors.Wrap(err, "removing")
-		}
-
 		return nil
 	})
 
-	return &stats, err
+	// wait until all removal are finished the signal done
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+
+	select {
+		case <-done:
+			// all have exited cleanly
+			return &stats, err
+		case err = <-errorChan:
+			// error; discard subsequent errors and return error
+			close(errorChan)
+			return &stats, err
+	}
+
 }
 
 // prune returns true if the file or dir should be pruned.
@@ -199,6 +229,34 @@ func (p Pruner) prune(path string, info os.FileInfo) bool {
 	ext := filepath.Ext(path)
 	_, ok = p.exts[ext]
 	return ok
+}
+
+func remove(path string, info os.FileInfo, wg *sync.WaitGroup, errorChan chan<- error) {
+	// remove and skip dir
+	if info.IsDir() {
+		if err := os.RemoveAll(path); err != nil {
+			errorChan <- errors.Wrap(err, "removing dir")
+			return
+		}
+		wg.Done()
+		return
+	}
+
+	// remove file
+	if err := os.Remove(path); err != nil {
+		errorChan <- errors.Wrap(err, "removing")
+		return
+	}
+
+	// removal done for given path
+	wg.Done()
+}
+
+func delete_handler(dataChan <-chan *DataObject)  {
+	// consume from dataChan and delete files or dir one after another
+	for data := range dataChan {
+		remove(data.path, data.info, data.wg, data.errorChan)
+	}
 }
 
 // dirStats returns stats for files in dir.
