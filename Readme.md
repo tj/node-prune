@@ -32,7 +32,7 @@ size removed 21 MB
 
 ## What?
 
-node-prune is a small tool to prune unnecessary files from ./node_modules.
+node-prune is a small tool to prune unnecessary files from ./node_modules, such as markdown, typescript source files, and so on.
 
 ## Why?
 
