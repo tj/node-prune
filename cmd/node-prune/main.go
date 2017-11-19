@@ -22,15 +22,13 @@ func main() {
 
 	start := time.Now()
 
-	if dir == "" {
-		dir = "node_modules"
-	}
-
 	if *debug {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	stats, err := prune.Prune(dir)
+	p := prune.New(prune.WithDir(dir))
+
+	stats, err := p.Prune()
 	if err != nil {
 		log.Fatalf("error: %s", err)
 	}

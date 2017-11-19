@@ -22,9 +22,23 @@ type Pruner struct {
 	Log log.Interface
 }
 
-// Prune dir of unnecessary files.
-func Prune(dir string) (*Stats, error) {
-	return Pruner{dir, log.Log}.Prune()
+// Option function.
+type Option func(*Pruner)
+
+// New with the given options.
+func New(options ...Option) *Pruner {
+	v := &Pruner{Dir: "node_modules", Log: log.Log}
+	for _, o := range options {
+		o(v)
+	}
+	return v
+}
+
+// WithDir option.
+func WithDir(s string) Option {
+	return func(v *Pruner) {
+		v.Dir = s
+	}
 }
 
 // Prune performs the pruning.
