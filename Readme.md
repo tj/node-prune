@@ -13,10 +13,10 @@ In your app directory:
 ```
 $ node-prune
 
-files total 27,329
-files removed 3,977
-size removed 13 MB
-   duration 352ms
+files total 25,042
+files removed 5,851
+size removed 21 MB
+   duration 433ms
 ```
 
 Somewhere else:
@@ -24,10 +24,10 @@ Somewhere else:
 ```
 $ node-prune path/to/node_modules
 
-files total 27,329
-files removed 3,977
-size removed 13 MB
-   duration 352ms
+files total 25,042
+files removed 5,851
+size removed 21 MB
+   duration 433ms
 ```
 
 ## What?
