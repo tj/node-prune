@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sync"
+	"sync/atomic"
 
 	"github.com/apex/log"
 )
@@ -78,6 +80,7 @@ type Pruner struct {
 	exts  map[string]struct{}
 	files map[string]struct{}
 	ch    chan func()
+	wg    sync.WaitGroup
 }
 
 // Option function.
@@ -130,10 +133,11 @@ func WithFiles(s []string) Option {
 }
 
 // Prune performs the pruning.
-func (p Pruner) Prune() (*Stats, error) {
+func (p *Pruner) Prune() (*Stats, error) {
 	var stats Stats
 
 	for i := 0; i < runtime.NumCPU(); i++ {
+		p.wg.Add(1)
 		go p.start()
 	}
 	defer p.stop()
@@ -159,20 +163,18 @@ func (p Pruner) Prune() (*Stats, error) {
 
 		// prune
 		ctx.Info("prune")
-		stats.FilesRemoved++
-		stats.SizeRemoved += info.Size()
-
-		// dir stats
-		if info.IsDir() {
-			s, _ := dirStats(path)
-			stats.FilesTotal += s.FilesTotal
-			stats.FilesRemoved += s.FilesRemoved
-			stats.SizeRemoved += s.SizeRemoved
-		}
+		atomic.AddInt64(&stats.FilesRemoved, 1)
+		atomic.AddInt64(&stats.SizeRemoved, info.Size())
 
 		// remove and skip dir
 		if info.IsDir() {
 			p.ch <- func() {
+				s, _ := dirStats(path)
+
+				atomic.AddInt64(&stats.FilesTotal, s.FilesTotal)
+				atomic.AddInt64(&stats.FilesRemoved, s.FilesRemoved)
+				atomic.AddInt64(&stats.SizeRemoved, s.SizeRemoved)
+
 				if err := os.RemoveAll(path); err != nil {
 					ctx.WithError(err).Error("removing directory")
 				}
@@ -194,7 +196,7 @@ func (p Pruner) Prune() (*Stats, error) {
 }
 
 // prune returns true if the file or dir should be pruned.
-func (p Pruner) prune(path string, info os.FileInfo) bool {
+func (p *Pruner) prune(path string, info os.FileInfo) bool {
 	// directories
 	if info.IsDir() {
 		_, ok := p.dirs[info.Name()]
@@ -217,15 +219,17 @@ func (p Pruner) prune(path string, info os.FileInfo) bool {
 }
 
 // start loop.
-func (p Pruner) start() {
+func (p *Pruner) start() {
+	defer p.wg.Done()
 	for fn := range p.ch {
 		fn()
 	}
 }
 
 // stop loop.
-func (p Pruner) stop() {
+func (p *Pruner) stop() {
 	close(p.ch)
+	p.wg.Wait()
 }
 
 // dirStats returns stats for files in dir.

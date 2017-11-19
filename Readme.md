@@ -18,9 +18,9 @@ In your app directory:
 $ node-prune
 
 files total 27,330
-files removed 3,989
+files removed 3,990
 size removed 13 MB
-   duration 211ms
+   duration 200ms
 ```
 
 Somewhere else:
@@ -29,9 +29,9 @@ Somewhere else:
 $ node-prune path/to/node_modules
 
 files total 27,330
-files removed 3,989
+files removed 3,990
 size removed 13 MB
-   duration 211ms
+   duration 200ms
 ```
 
 ## Why?
