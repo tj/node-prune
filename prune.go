@@ -36,10 +36,6 @@ func (p Pruner) Prune() (*Stats, error) {
 			return err
 		}
 
-		if info.IsDir() {
-			return nil
-		}
-
 		stats.FilesTotal++
 
 		if !p.prune(path, info) {
@@ -62,6 +58,10 @@ func (p Pruner) Prune() (*Stats, error) {
 
 // prune returns true if the file or dir should be pruned.
 func (p Pruner) prune(path string, info os.FileInfo) bool {
+	if info.IsDir() {
+		return false
+	}
+
 	ext := filepath.Ext(path)
 	return ext == ".ts" || ext == ".md"
 }
