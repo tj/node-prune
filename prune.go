@@ -4,9 +4,9 @@ package prune
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/apex/log"
-	"github.com/pkg/errors"
 )
 
 // DefaultFiles pruned.
@@ -76,6 +76,7 @@ type Pruner struct {
 	dirs  map[string]struct{}
 	exts  map[string]struct{}
 	files map[string]struct{}
+	ch    chan func()
 }
 
 // Option function.
@@ -89,6 +90,7 @@ func New(options ...Option) *Pruner {
 		exts:  toMap(DefaultExtensions),
 		dirs:  toMap(DefaultDirectories),
 		files: toMap(DefaultFiles),
+		ch:    make(chan func()),
 	}
 
 	for _, o := range options {
@@ -130,6 +132,11 @@ func WithFiles(s []string) Option {
 func (p Pruner) Prune() (*Stats, error) {
 	var stats Stats
 
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go p.start()
+	}
+	defer p.stop()
+
 	err := filepath.Walk(p.dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -164,15 +171,19 @@ func (p Pruner) Prune() (*Stats, error) {
 
 		// remove and skip dir
 		if info.IsDir() {
-			if err := os.RemoveAll(path); err != nil {
-				return errors.Wrap(err, "removing dir")
+			p.ch <- func() {
+				if err := os.RemoveAll(path); err != nil {
+					ctx.WithError(err).Error("removing directory")
+				}
 			}
 			return filepath.SkipDir
 		}
 
 		// remove file
-		if err := os.Remove(path); err != nil {
-			return errors.Wrap(err, "removing")
+		p.ch <- func() {
+			if err := os.Remove(path); err != nil {
+				ctx.WithError(err).Error("removing file")
+			}
 		}
 
 		return nil
@@ -199,6 +210,18 @@ func (p Pruner) prune(path string, info os.FileInfo) bool {
 	ext := filepath.Ext(path)
 	_, ok = p.exts[ext]
 	return ok
+}
+
+// start loop.
+func (p Pruner) start() {
+	for fn := range p.ch {
+		fn()
+	}
+}
+
+// stop loop.
+func (p Pruner) stop() {
+	close(p.ch)
 }
 
 // dirStats returns stats for files in dir.
