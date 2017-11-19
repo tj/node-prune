@@ -1,5 +1,9 @@
 <img src="http://tjholowaychuk.com:6000/svg/title/NODE/PRUNE">
 
+## What?
+
+node-prune is a small tool to prune unnecessary files from ./node_modules, such as markdown, typescript source files, and so on.
+
 ## Installation
 
 ```
@@ -29,10 +33,6 @@ files removed 3,989
 size removed 13 MB
    duration 211ms
 ```
-
-## What?
-
-node-prune is a small tool to prune unnecessary files from ./node_modules, such as markdown, typescript source files, and so on.
 
 ## Why?
 
