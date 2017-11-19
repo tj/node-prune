@@ -42,6 +42,10 @@ func (p Pruner) Prune() (*Stats, error) {
 			return nil
 		}
 
+		if info.IsDir() {
+			return filepath.SkipDir
+		}
+
 		p.Log.WithField("path", path).Debug("prune")
 		stats.FilesRemoved++
 		stats.SizeRemoved += info.Size()
