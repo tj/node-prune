@@ -60,6 +60,7 @@ var DefaultExtensions = []string{
 	".ts",
 	".jst",
 	".coffee",
+	".tgz",
 }
 
 // Stats for a prune.
@@ -201,14 +202,17 @@ func (p Pruner) prune(path string, info os.FileInfo) bool {
 	}
 
 	// files
-	_, ok := p.files[info.Name()]
-	if ok {
+	if _, ok := p.files[info.Name()]; ok {
 		return true
 	}
 
-	// extensions
+	// files exact match
+	if _, ok := p.files[path]; ok {
+		return true
+	}
+
 	ext := filepath.Ext(path)
-	_, ok = p.exts[ext]
+	_, ok := p.exts[ext]
 	return ok
 }
 
