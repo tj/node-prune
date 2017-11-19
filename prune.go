@@ -27,6 +27,8 @@ var DefaultFiles = []string{
 	".travis.yml",
 	"LICENSE.txt",
 	"LICENSE",
+	"AUTHORS",
+	"CONTRIBUTORS",
 	".yarn-integrity",
 }
 
@@ -53,6 +55,8 @@ var DefaultDirectories = []string{
 var DefaultExtensions = []string{
 	".md",
 	".ts",
+	".jst",
+	".coffee",
 }
 
 // Stats for a prune.
