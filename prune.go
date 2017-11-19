@@ -4,7 +4,6 @@ package prune
 import (
 	"os"
 	"path/filepath"
-	"sync/atomic"
 
 	"github.com/apex/log"
 	"github.com/pkg/errors"
@@ -41,15 +40,15 @@ func (p Pruner) Prune() (*Stats, error) {
 			return nil
 		}
 
-		atomic.AddInt64(&stats.FilesTotal, 1)
+		stats.FilesTotal++
 
-		if !prunable(path, info) {
+		if !p.prune(path, info) {
 			return nil
 		}
 
 		p.Log.WithField("path", path).Debug("prune")
-		atomic.AddInt64(&stats.FilesRemoved, 1)
-		atomic.AddInt64(&stats.SizeRemoved, info.Size())
+		stats.FilesRemoved++
+		stats.SizeRemoved += info.Size()
 
 		if err := os.Remove(path); err != nil {
 			return errors.Wrap(err, "removing")
@@ -61,8 +60,8 @@ func (p Pruner) Prune() (*Stats, error) {
 	return &stats, err
 }
 
-// prunable returns true if the file should be pruned.
-func prunable(path string, info os.FileInfo) bool {
+// prune returns true if the file or dir should be pruned.
+func (p Pruner) prune(path string, info os.FileInfo) bool {
 	ext := filepath.Ext(path)
 	return ext == ".ts" || ext == ".md"
 }
