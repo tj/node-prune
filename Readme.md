@@ -8,12 +8,27 @@ $ go get github.com/tj/node-prune/cmd/node-prune
 
 ## Usage
 
+In your app directory:
+
 ```
-$ cd myapp
 $ node-prune
-   • complete duration=217ms files_removed=1,222 files_total=25,520 size_removed=6.8 MB
+
+files total 27,329
+files removed 3,977
+size removed 13 MB
+   duration 352ms
 ```
 
+Somewhere else:
+
+```
+$ node-prune path/to/node_modules
+
+files total 27,329
+files removed 3,977
+size removed 13 MB
+   duration 352ms
+```
 
 ## What?
 
