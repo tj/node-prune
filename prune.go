@@ -131,7 +131,10 @@ func (p Pruner) Prune() (*Stats, error) {
 
 		stats.FilesTotal++
 
+		ctx := p.log.WithField("path", path)
+
 		if !p.prune(path, info) {
+			ctx.Debug("keeping")
 			return nil
 		}
 
@@ -139,7 +142,7 @@ func (p Pruner) Prune() (*Stats, error) {
 			return filepath.SkipDir
 		}
 
-		p.log.WithField("path", path).Debug("prune")
+		ctx.Debug("prune")
 		stats.FilesRemoved++
 		stats.SizeRemoved += info.Size()
 

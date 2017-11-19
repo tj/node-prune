@@ -14,9 +14,10 @@ $ node-prune
    • complete duration=217ms files_removed=1,222 files_total=25,520 size_removed=6.8 MB
 ```
 
+
 ## What?
 
-node-prune is a small tool to prune unecessary files from ./node_modules.
+node-prune is a small tool to prune unnecessary files from ./node_modules.
 
 ## Why?
 
