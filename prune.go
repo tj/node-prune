@@ -18,8 +18,8 @@ type Stats struct {
 
 // Pruner is a module pruner.
 type Pruner struct {
-	Dir string
-	Log log.Interface
+	dir string
+	log log.Interface
 }
 
 // Option function.
@@ -27,7 +27,7 @@ type Option func(*Pruner)
 
 // New with the given options.
 func New(options ...Option) *Pruner {
-	v := &Pruner{Dir: "node_modules", Log: log.Log}
+	v := &Pruner{dir: "node_modules", log: log.Log}
 	for _, o := range options {
 		o(v)
 	}
@@ -37,7 +37,7 @@ func New(options ...Option) *Pruner {
 // WithDir option.
 func WithDir(s string) Option {
 	return func(v *Pruner) {
-		v.Dir = s
+		v.dir = s
 	}
 }
 
@@ -45,7 +45,7 @@ func WithDir(s string) Option {
 func (p Pruner) Prune() (*Stats, error) {
 	var stats Stats
 
-	err := filepath.Walk(p.Dir, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(p.dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -60,7 +60,7 @@ func (p Pruner) Prune() (*Stats, error) {
 			return filepath.SkipDir
 		}
 
-		p.Log.WithField("path", path).Debug("prune")
+		p.log.WithField("path", path).Debug("prune")
 		stats.FilesRemoved++
 		stats.SizeRemoved += info.Size()
 
