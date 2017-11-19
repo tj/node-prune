@@ -147,7 +147,7 @@ func (p Pruner) Prune() (*Stats, error) {
 		}
 
 		// prune
-		ctx.Info("prune")
+		ctx.Debug("pruning")
 		stats.FilesRemoved++
 		stats.SizeRemoved += info.Size()
 
