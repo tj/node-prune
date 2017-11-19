@@ -210,6 +210,7 @@ func (p *Pruner) prune(path string, info os.FileInfo) bool {
 		return true
 	}
 
+	// extensions
 	ext := filepath.Ext(path)
 	_, ok := p.exts[ext]
 	return ok
