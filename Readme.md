@@ -11,7 +11,7 @@ $ go get github.com/tj/node-prune/cmd/node-prune
 ```
 $ cd myapp
 $ node-prune
-  INFO[0000] complete                  duration=195ms files_removed=1,222 files_total=25,520 size_removed=6.8 MB
+   • complete duration=217ms files_removed=1,222 files_total=25,520 size_removed=6.8 MB
 ```
 
 ## What?

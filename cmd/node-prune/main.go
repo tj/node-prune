@@ -5,14 +5,14 @@ import (
 	"time"
 
 	"github.com/apex/log"
-	"github.com/apex/log/handlers/text"
+	"github.com/apex/log/handlers/cli"
 	"github.com/dustin/go-humanize"
 
 	"github.com/tj/node-prune"
 )
 
 func init() {
-	log.SetHandler(text.Default)
+	log.SetHandler(cli.Default)
 }
 
 func main() {
