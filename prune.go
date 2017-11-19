@@ -140,19 +140,26 @@ func (p Pruner) Prune() (*Stats, error) {
 			"dir":  info.IsDir(),
 		})
 
+		// keep
 		if !p.prune(path, info) {
 			ctx.Debug("keep")
 			return nil
 		}
 
-		if info.IsDir() {
-			return filepath.SkipDir
-		}
-
+		// prune
 		ctx.Info("prune")
 		stats.FilesRemoved++
 		stats.SizeRemoved += info.Size()
 
+		// remove and skip dir
+		if info.IsDir() {
+			if err := os.RemoveAll(path); err != nil {
+				return errors.Wrap(err, "removing dir")
+			}
+			return filepath.SkipDir
+		}
+
+		// remove file
 		if err := os.Remove(path); err != nil {
 			return errors.Wrap(err, "removing")
 		}
