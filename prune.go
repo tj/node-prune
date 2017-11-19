@@ -12,7 +12,7 @@ import (
 // DefaultFiles pruned.
 //
 // Copied from yarn (mostly).
-var DefaultFiles = []string{
+var DefaultFiles = []string {
 	"Makefile",
 	"Gulpfile.js",
 	"Gruntfile.js",
@@ -36,7 +36,7 @@ var DefaultFiles = []string{
 // DefaultDirectories pruned.
 //
 // Copied from yarn (mostly).
-var DefaultDirectories = []string{
+var DefaultDirectories = []string {
 	"__tests__",
 	"test",
 	"tests",
@@ -55,7 +55,7 @@ var DefaultDirectories = []string{
 }
 
 // DefaultExtensions pruned.
-var DefaultExtensions = []string{
+var DefaultExtensions = []string {
 	".md",
 	".ts",
 	".jst",
@@ -83,7 +83,7 @@ type Option func(*Pruner)
 
 // New with the given options.
 func New(options ...Option) *Pruner {
-	v := &Pruner{
+	v := &Pruner {
 		dir:   "node_modules",
 		log:   log.Log,
 		exts:  toMap(DefaultExtensions),
