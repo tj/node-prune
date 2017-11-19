@@ -11,7 +11,7 @@ node-prune is a small tool to prune unecessary files from ./node_modules.
 ## Installation
 
 ```
-$ go get github.com/tj/node-prune
+$ go get github.com/tj/node-prune/cmd/node-prune
 ```
 
 ---
