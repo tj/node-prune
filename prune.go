@@ -27,6 +27,7 @@ var DefaultFiles = []string{
 	".travis.yml",
 	"LICENSE.txt",
 	"LICENSE",
+	".yarn-integrity",
 }
 
 // DefaultDirectories pruned.
@@ -144,7 +145,7 @@ func (p Pruner) Prune() (*Stats, error) {
 			return filepath.SkipDir
 		}
 
-		ctx.Debug("prune")
+		ctx.Info("prune")
 		stats.FilesRemoved++
 		stats.SizeRemoved += info.Size()
 
