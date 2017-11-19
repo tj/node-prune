@@ -9,6 +9,26 @@ import (
 	"github.com/pkg/errors"
 )
 
+// DefaultFiles pruned.
+//
+// Copied from yarn (mostly).
+var DefaultFiles = []string{
+	"Makefile",
+	"Gulpfile.js",
+	"Gruntfile.js",
+	".tern-project",
+	".gitattributes",
+	".editorconfig",
+	".*ignore",
+	".eslintrc",
+	".jshintrc",
+	".flowconfig",
+	".documentup.json",
+	".yarn-metadata.json",
+	".*.yml",
+	"*.yml",
+}
+
 // DefaultDirectories pruned.
 //
 // Copied from yarn (mostly).
@@ -45,10 +65,11 @@ type Stats struct {
 
 // Pruner is a module pruner.
 type Pruner struct {
-	dir  string
-	log  log.Interface
-	dirs map[string]struct{}
-	exts map[string]struct{}
+	dir   string
+	log   log.Interface
+	dirs  map[string]struct{}
+	exts  map[string]struct{}
+	files map[string]struct{}
 }
 
 // Option function.
@@ -57,9 +78,11 @@ type Option func(*Pruner)
 // New with the given options.
 func New(options ...Option) *Pruner {
 	v := &Pruner{
-		dir:  "node_modules",
-		log:  log.Log,
-		exts: toMap(DefaultExtensions),
+		dir:   "node_modules",
+		log:   log.Log,
+		exts:  toMap(DefaultExtensions),
+		dirs:  toMap(DefaultDirectories),
+		files: toMap(DefaultFiles),
 	}
 
 	for _, o := range options {
@@ -87,6 +110,13 @@ func WithExtensions(s []string) Option {
 func WithDirectories(s []string) Option {
 	return func(v *Pruner) {
 		v.dirs = toMap(s)
+	}
+}
+
+// WithFiles option.
+func WithFiles(s []string) Option {
+	return func(v *Pruner) {
+		v.files = toMap(s)
 	}
 }
 
@@ -125,13 +155,21 @@ func (p Pruner) Prune() (*Stats, error) {
 
 // prune returns true if the file or dir should be pruned.
 func (p Pruner) prune(path string, info os.FileInfo) bool {
+	// directories
 	if info.IsDir() {
 		_, ok := p.dirs[info.Name()]
 		return ok
 	}
 
+	// files
+	_, ok := p.files[info.Name()]
+	if ok {
+		return true
+	}
+
+	// extensions
 	ext := filepath.Ext(path)
-	_, ok := p.exts[ext]
+	_, ok = p.exts[ext]
 	return ok
 }
 
