@@ -1,5 +1,11 @@
 <img src="http://tjholowaychuk.com:6000/svg/title/NODE/PRUNE">
 
+## Installation
+
+```
+$ go get github.com/tj/node-prune/cmd/node-prune
+```
+
 ## What?
 
 node-prune is a small tool to prune unecessary files from ./node_modules.
@@ -7,12 +13,6 @@ node-prune is a small tool to prune unecessary files from ./node_modules.
 ## Why?
 
 ![huge](https://pbs.twimg.com/media/DEIV_1XWsAAlY29.jpg)
-
-## Installation
-
-```
-$ go get github.com/tj/node-prune/cmd/node-prune
-```
 
 ---
 
