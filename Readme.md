@@ -6,7 +6,7 @@ node-prune is a small tool to prune unecessary files from ./node_modules.
 
 ## Why?
 
-[]!(https://pbs.twimg.com/media/DEIV_1XWsAAlY29.jpg)
+![huge](https://pbs.twimg.com/media/DEIV_1XWsAAlY29.jpg)
 
 ## Installation
 
