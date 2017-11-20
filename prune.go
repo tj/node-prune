@@ -63,6 +63,7 @@ var DefaultExtensions = []string{
 	".jst",
 	".coffee",
 	".tgz",
+        ".swp",
 }
 
 // Stats for a prune.
