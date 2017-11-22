@@ -34,8 +34,6 @@ var DefaultFiles = []string{
 	"circle.yml",
 	".coveralls.yml"
 	"CHANGES",
-	"CHANGELOG.md",
-	"HISTORY.md",
 	"LICENSE.txt",
 	"LICENSE",
 	"AUTHORS",
