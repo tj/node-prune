@@ -23,11 +23,17 @@ var DefaultFiles = []string{
 	".gitattributes",
 	".editorconfig",
 	".eslintrc",
+	".eslintrc.js"
+	".eslintignore",
+	".npmignore"
 	".jshintrc",
 	".flowconfig",
 	".documentup.json",
 	".yarn-metadata.json",
 	".travis.yml",
+	"circle.yml",
+	".coveralls.yml"
+	"CHANGES",
 	"LICENSE.txt",
 	"LICENSE",
 	"AUTHORS",
@@ -54,6 +60,7 @@ var DefaultDirectories = []string{
 	"examples",
 	"coverage",
 	".nyc_output",
+	".circleci"
 }
 
 // DefaultExtensions pruned.
