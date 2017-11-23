@@ -31,6 +31,7 @@ var DefaultFiles = []string{
 	".documentup.json",
 	".yarn-metadata.json",
 	".travis.yml",
+	"appveyor.yml",
 	"circle.yml",
 	".coveralls.yml",
 	"CHANGES",
