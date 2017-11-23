@@ -39,6 +39,7 @@ var DefaultFiles = []string{
 	"AUTHORS",
 	"CONTRIBUTORS",
 	".yarn-integrity",
+	".yarnclean",
 }
 
 // DefaultDirectories pruned.
@@ -61,6 +62,7 @@ var DefaultDirectories = []string{
 	"coverage",
 	".nyc_output",
 	".circleci",
+	".github",
 }
 
 // DefaultExtensions pruned.
