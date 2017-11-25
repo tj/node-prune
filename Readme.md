@@ -2,7 +2,7 @@
 
 ## What?
 
-node-prune is a small tool to prune unnecessary files from ./node_modules, such as markdown, typescript source files, and so on.
+node-prune is a small tool to prune unnecessary files from ./node_modules, such as markdown, typescript source files, and so on. Primarily built for [Up](https://github.com/apex/up) which lets you deploy serverless web applications in seconds.
 
 ## Installation
 
