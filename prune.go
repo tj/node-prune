@@ -41,6 +41,7 @@ var DefaultFiles = []string{
 	"CONTRIBUTORS",
 	".yarn-integrity",
 	".yarnclean",
+	"_config.yml"
 }
 
 // DefaultDirectories pruned.
