@@ -34,6 +34,14 @@ size removed 13 MB
    duration 200ms
 ```
 
+Or add to the ``package.json`` scripts field
+
+```
+  "scripts": {
+    "postinstall": "node-prune"
+  }
+```
+
 ## Why?
 
 ![huge](https://pbs.twimg.com/media/DEIV_1XWsAAlY29.jpg)
