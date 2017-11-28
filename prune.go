@@ -7,8 +7,8 @@ import (
 	"runtime"
 	"sync"
 	"sync/atomic"
-
 	"github.com/apex/log"
+	"regexp"
 )
 
 // DefaultFiles pruned.
@@ -79,6 +79,11 @@ var DefaultExtensions = []string{
 	".swp",
 }
 
+// Default pruned which match regular expression
+var DefaultRegExp = []string{
+	`\.___jb_tmp___$`,
+}
+
 // Stats for a prune.
 type Stats struct {
 	FilesTotal   int64
@@ -88,13 +93,14 @@ type Stats struct {
 
 // Pruner is a module pruner.
 type Pruner struct {
-	dir   string
-	log   log.Interface
-	dirs  map[string]struct{}
-	exts  map[string]struct{}
-	files map[string]struct{}
-	ch    chan func()
-	wg    sync.WaitGroup
+	dir    string
+	log    log.Interface
+	dirs   map[string]struct{}
+	exts   map[string]struct{}
+	files  map[string]struct{}
+	regexp []*regexp.Regexp
+	ch     chan func()
+	wg     sync.WaitGroup
 }
 
 // Option function.
@@ -103,12 +109,13 @@ type Option func(*Pruner)
 // New with the given options.
 func New(options ...Option) *Pruner {
 	v := &Pruner{
-		dir:   "node_modules",
-		log:   log.Log,
-		exts:  toMap(DefaultExtensions),
-		dirs:  toMap(DefaultDirectories),
-		files: toMap(DefaultFiles),
-		ch:    make(chan func()),
+		dir:    "node_modules",
+		log:    log.Log,
+		exts:   toMap(DefaultExtensions),
+		dirs:   toMap(DefaultDirectories),
+		files:  toMap(DefaultFiles),
+		regexp: compileRegExp(DefaultRegExp),
+		ch:     make(chan func()),
 	}
 
 	for _, o := range options {
@@ -226,8 +233,19 @@ func (p *Pruner) prune(path string, info os.FileInfo) bool {
 
 	// extensions
 	ext := filepath.Ext(path)
-	_, ok := p.exts[ext]
-	return ok
+	if _, ok := p.exts[ext]; ok {
+		return ok
+	}
+
+
+	for _, reg := range p.regexp {
+		if isMatch := reg.Match([]byte(path)); isMatch {
+			return true
+		}
+	}
+
+	// unknown file should skip
+	return false
 }
 
 // startN starts n loops.
@@ -264,6 +282,15 @@ func dirStats(dir string) (*Stats, error) {
 	})
 
 	return &stats, err
+}
+
+// compile an regular expression array
+func compileRegExp(r []string) (regs []*regexp.Regexp) {
+	for _, patten := range r {
+		reg := regexp.MustCompile(patten)
+		regs = append(regs, reg)
+	}
+	return
 }
 
 // toMap returns a map from slice.
