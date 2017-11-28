@@ -42,6 +42,8 @@ var DefaultFiles = []string{
 	".yarn-integrity",
 	".yarnclean",
 	"_config.yml",
+	".babelrc",
+	".yo-rc.json",
 }
 
 // DefaultDirectories pruned.
