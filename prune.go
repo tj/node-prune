@@ -145,13 +145,11 @@ func WithFiles(s []string) Option {
 }
 
 // Prune performs the pruning.
-func (p *Pruner) Prune() (*Stats, error) {
-	var stats Stats
-
+func (p *Pruner) Prune() (stats *Stats, err error) {
 	p.startN(runtime.NumCPU())
 	defer p.stop()
 
-	err := filepath.Walk(p.dir, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(p.dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
