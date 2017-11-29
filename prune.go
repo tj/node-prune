@@ -44,6 +44,7 @@ var DefaultFiles = []string{
 	"_config.yml",
 	".babelrc",
 	".yo-rc.json",
+	"jest.config.js",
 }
 
 // DefaultDirectories pruned.
