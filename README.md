@@ -1,4 +1,6 @@
-<img src="http://tjholowaychuk.com:6000/svg/title/NODE/PRUNE">
+<p align="center">
+  <img alt="node prune" src="docs/node-modules-size.png" height="300">
+</p>
 
 ## What?
 
