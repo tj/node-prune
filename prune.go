@@ -45,7 +45,7 @@ var DefaultFiles = []string{
 	"CHANGES",
 	"LICENSE.txt",
 	"LICENSE",
-        "license",
+	"license",
 	"AUTHORS",
 	"CONTRIBUTORS",
 	".yarn-integrity",
