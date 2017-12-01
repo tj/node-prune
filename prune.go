@@ -53,6 +53,7 @@ var DefaultFiles = []string{
 	".babelrc",
 	".yo-rc.json",
 	"jest.config.js",
+	"karma.conf.js",
 	".appveyor.yml",
 	"tsconfig.json",
 }
