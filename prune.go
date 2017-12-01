@@ -54,6 +54,7 @@ var DefaultFiles = []string{
 	".yo-rc.json",
 	"jest.config.js",
 	".appveyor.yml",
+	"tsconfig.json",
 }
 
 // DefaultDirectories pruned.
@@ -81,6 +82,7 @@ var DefaultDirectories = []string{
 
 // DefaultExtensions pruned.
 var DefaultExtensions = []string{
+	".markdown",
 	".md",
 	".ts",
 	".jst",
