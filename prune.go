@@ -80,6 +80,7 @@ var DefaultDirectories = []string{
 
 // DefaultExtensions pruned.
 var DefaultExtensions = []string{
+	".markdown",
 	".md",
 	".ts",
 	".jst",
