@@ -10,6 +10,12 @@ node-prune is a small tool to prune unnecessary files from ./node_modules, such 
 $ go get github.com/tj/node-prune/cmd/node-prune
 ```
 
+or
+
+```
+$ curl -sfL https://install.goreleaser.com/github.com/tj/node-prune.sh | bash
+```
+
 ## Usage
 
 In your app directory:
