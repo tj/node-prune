@@ -16,9 +16,7 @@ import (
 // Copied from yarn (mostly).
 var DefaultFiles = []string{
 	"Makefile",
-	"Gulpfile.js",
 	"Gruntfile.js",
-	"gulpfile.js",
 	".DS_Store",
 	".tern-project",
 	".gitattributes",
