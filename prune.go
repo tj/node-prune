@@ -66,6 +66,8 @@ var DefaultFiles = []string{
 	"karma.conf.js",
 	".appveyor.yml",
 	"tsconfig.json",
+	"webpack.config.js",
+	"jsconfig.json",
 }
 
 // DefaultDirectories pruned.
