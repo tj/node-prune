@@ -82,7 +82,6 @@ var DefaultDirectories = []string{
 	".vscode",
 	"website",
 	"images",
-	"assets",
 	"example",
 	"examples",
 	"coverage",
