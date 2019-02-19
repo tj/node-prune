@@ -39,7 +39,7 @@ var DefaultFiles = []string{
 	".htmllintrc",
 	"htmllint.js",
 	".lint",
-	".npmrc"
+	".npmrc",
 	".npmignore",
 	".jshintrc",
 	".flowconfig",
