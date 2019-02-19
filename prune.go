@@ -15,6 +15,7 @@ import (
 //
 // Copied from yarn (mostly).
 var DefaultFiles = []string{
+	"Jenkinsfile",
 	"Makefile",
 	"Gulpfile.js",
 	"Gruntfile.js",
@@ -38,6 +39,7 @@ var DefaultFiles = []string{
 	".htmllintrc",
 	"htmllint.js",
 	".lint",
+	".npmrc"
 	".npmignore",
 	".jshintrc",
 	".flowconfig",
@@ -69,8 +71,17 @@ var DefaultFiles = []string{
 	".yo-rc.json",
 	"jest.config.js",
 	"karma.conf.js",
+	"wallaby.js",
+	"wallaby.conf.js",
+	".prettierrc",
+	".prettierrc.yml",
+	".prettierrc.toml",
+	".prettierrc.js",
+	".prettierrc.json",
+	"prettier.config.js",
 	".appveyor.yml",
 	"tsconfig.json",
+	"tslint.json",
 }
 
 // DefaultDirectories pruned.
