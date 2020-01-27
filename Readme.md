@@ -5,9 +5,20 @@
 node-prune is a small tool to prune unnecessary files from ./node_modules, such as markdown, typescript source files, and so on. Primarily built for [Up](https://github.com/apex/up) which lets you deploy serverless web applications in seconds.
 
 ## Installation
+If Go is already installed check check if your are using latest version, comparing to https://github.com/golang/go/releases, type this command to check your local Go version 
 
 From source:
 
+```
+$ go version
+```
+Before install package make sure your GOPATH in` ~/.bash_profile` is set. It must be path to Go binaries. 
+
+```
+ export GOPATH="$HOME/go"
+```
+
+#### Install the package:
 ```
 $ go get github.com/tj/node-prune/cmd/node-prune
 ```
