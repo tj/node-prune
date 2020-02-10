@@ -9,13 +9,13 @@ node-prune is a small tool to prune unnecessary files from ./node_modules, such 
 From [gobinaries.com](https://gobinaries.com):
 
 ```sh
-$ curl -sf https://gobinaries.com/tj/node-prune/cmd/node-prune | sh
+$ curl -sf https://gobinaries.com/tj/node-prune | sh
 ```
 
 From source:
 
 ```
-$ go get github.com/tj/node-prune/cmd/node-prune
+$ go get github.com/tj/node-prune
 ```
 
 ## Usage
