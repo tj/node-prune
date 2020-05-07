@@ -119,13 +119,6 @@ var DefaultExtensions = []string{
 	".swp",
 }
 
-// Globs of files that should not be pruned.
-// Keep this list small if possible, as each file will need
-// to be compared to each glob here
-var ExceptionGlobs = []string{
-	"*.d.ts",
-}
-
 // Stats for a prune.
 type Stats struct {
 	FilesTotal   int64
@@ -140,6 +133,7 @@ type Pruner struct {
 	dirs    map[string]struct{}
 	exts    map[string]struct{}
 	excepts []string
+	globs   []string
 	files   map[string]struct{}
 	ch      chan func()
 	wg      sync.WaitGroup
@@ -154,7 +148,8 @@ func New(options ...Option) *Pruner {
 		dir:     "node_modules",
 		log:     log.Log,
 		exts:    toMap(DefaultExtensions),
-		excepts: ExceptionGlobs,
+		excepts: []string{},
+		globs:   []string{},
 		dirs:    toMap(DefaultDirectories),
 		files:   toMap(DefaultFiles),
 		ch:      make(chan func()),
@@ -171,6 +166,13 @@ func New(options ...Option) *Pruner {
 func WithDir(s string) Option {
 	return func(v *Pruner) {
 		v.dir = s
+	}
+}
+
+// WithGlobs option.
+func WithGlobs(s []string) Option {
+	return func(v *Pruner) {
+		v.globs = s
 	}
 }
 
@@ -269,6 +271,14 @@ func (p *Pruner) prune(path string, info os.FileInfo) bool {
 		matched, _ := filepath.Match(glob, info.Name())
 		if matched {
 			return false
+		}
+	}
+
+	// globs
+	for _, glob := range p.globs {
+		matched, _ := filepath.Match(glob, info.Name())
+		if matched {
+			return true
 		}
 	}
 
