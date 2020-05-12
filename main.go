@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/apex/log"
@@ -17,8 +18,27 @@ func init() {
 	log.SetLevel(log.WarnLevel)
 }
 
+type arrayFlags []string
+
+func (i *arrayFlags) String() string {
+	return strings.Join(*i, ", ")
+}
+
+func (i *arrayFlags) Set(value string) error {
+	*i = append(*i, value)
+	return nil
+}
+
+// Globs of files that should not be pruned
+var exclusionGlobs arrayFlags
+
+// Globs of files that should always be pruned in addition to the defaults
+var inclusionGlobs arrayFlags
+
 func main() {
 	debug := flag.Bool("verbose", false, "Verbose log output.")
+	flag.Var(&exclusionGlobs, "exclude", "Glob of files that should not be pruned. Can be specified multiple times.")
+	flag.Var(&inclusionGlobs, "include", "Globs of files that should always be pruned in addition to the defaults. Can be specified multiple times.")
 	flag.Parse()
 	dir := flag.Arg(0)
 
@@ -32,6 +52,14 @@ func main() {
 
 	if dir != "" {
 		options = append(options, prune.WithDir(dir))
+	}
+
+	if len(exclusionGlobs) > 0 {
+		options = append(options, prune.WithExceptions(exclusionGlobs))
+	}
+
+	if len(inclusionGlobs) > 0 {
+		options = append(options, prune.WithGlobs(inclusionGlobs))
 	}
 
 	p := prune.New(options...)

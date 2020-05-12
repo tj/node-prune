@@ -128,13 +128,15 @@ type Stats struct {
 
 // Pruner is a module pruner.
 type Pruner struct {
-	dir   string
-	log   log.Interface
-	dirs  map[string]struct{}
-	exts  map[string]struct{}
-	files map[string]struct{}
-	ch    chan func()
-	wg    sync.WaitGroup
+	dir     string
+	log     log.Interface
+	dirs    map[string]struct{}
+	exts    map[string]struct{}
+	excepts []string
+	globs   []string
+	files   map[string]struct{}
+	ch      chan func()
+	wg      sync.WaitGroup
 }
 
 // Option function.
@@ -143,12 +145,14 @@ type Option func(*Pruner)
 // New with the given options.
 func New(options ...Option) *Pruner {
 	v := &Pruner{
-		dir:   "node_modules",
-		log:   log.Log,
-		exts:  toMap(DefaultExtensions),
-		dirs:  toMap(DefaultDirectories),
-		files: toMap(DefaultFiles),
-		ch:    make(chan func()),
+		dir:     "node_modules",
+		log:     log.Log,
+		exts:    toMap(DefaultExtensions),
+		excepts: []string{},
+		globs:   []string{},
+		dirs:    toMap(DefaultDirectories),
+		files:   toMap(DefaultFiles),
+		ch:      make(chan func()),
 	}
 
 	for _, o := range options {
@@ -162,6 +166,20 @@ func New(options ...Option) *Pruner {
 func WithDir(s string) Option {
 	return func(v *Pruner) {
 		v.dir = s
+	}
+}
+
+// WithGlobs option.
+func WithGlobs(s []string) Option {
+	return func(v *Pruner) {
+		v.globs = s
+	}
+}
+
+// WithExceptions option.
+func WithExceptions(s []string) Option {
+	return func(v *Pruner) {
+		v.excepts = s
 	}
 }
 
@@ -248,6 +266,22 @@ func (p *Pruner) Prune() (*Stats, error) {
 
 // prune returns true if the file or dir should be pruned.
 func (p *Pruner) prune(path string, info os.FileInfo) bool {
+	// exceptions
+	for _, glob := range p.excepts {
+		matched, _ := filepath.Match(glob, info.Name())
+		if matched {
+			return false
+		}
+	}
+
+	// globs
+	for _, glob := range p.globs {
+		matched, _ := filepath.Match(glob, info.Name())
+		if matched {
+			return true
+		}
+	}
+
 	// directories
 	if info.IsDir() {
 		_, ok := p.dirs[info.Name()]
