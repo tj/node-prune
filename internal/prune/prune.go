@@ -82,6 +82,7 @@ var DefaultFiles = []string{
 	".appveyor.yml",
 	"tsconfig.json",
 	"tslint.json",
+	"package-lock.json",
 }
 
 // DefaultDirectories pruned.
@@ -105,6 +106,8 @@ var DefaultDirectories = []string{
 	".nyc_output",
 	".circleci",
 	".github",
+	"man",
+	"features",
 }
 
 // DefaultExtensions pruned.
@@ -117,6 +120,12 @@ var DefaultExtensions = []string{
 	".coffee",
 	".tgz",
 	".swp",
+	".h",
+	".c",
+	".hpp",
+	".cpp",
+	".o",
+	".mk",
 }
 
 // Stats for a prune.
