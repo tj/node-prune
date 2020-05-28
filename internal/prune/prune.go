@@ -108,6 +108,7 @@ var DefaultDirectories = []string{
 	".github",
 	"man",
 	"features",
+	".git",
 }
 
 // DefaultExtensions pruned.
