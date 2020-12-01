@@ -82,8 +82,6 @@ var DefaultFiles = []string{
 	".appveyor.yml",
 	"tsconfig.json",
 	"tslint.json",
-	"package-lock.json",
-}
 
 // DefaultDirectories pruned.
 //
