@@ -105,6 +105,9 @@ var DefaultDirectories = []string{
 	".nyc_output",
 	".circleci",
 	".github",
+	"man",
+	"features",
+	".git",
 }
 
 // DefaultExtensions pruned.
@@ -117,6 +120,12 @@ var DefaultExtensions = []string{
 	".coffee",
 	".tgz",
 	".swp",
+	".h",
+	".c",
+	".hpp",
+	".cpp",
+	".o",
+	".mk",
 }
 
 // Stats for a prune.
