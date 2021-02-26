@@ -117,6 +117,7 @@ var DefaultExtensions = []string{
 	".coffee",
 	".tgz",
 	".swp",
+	".js.map",
 }
 
 // Stats for a prune.
