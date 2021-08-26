@@ -9,6 +9,7 @@ import (
 	"sync/atomic"
 
 	"github.com/apex/log"
+	"github.com/karrick/godirwalk"
 )
 
 // DefaultFiles pruned.
@@ -97,14 +98,17 @@ var DefaultDirectories = []string{
 	".idea",
 	".vscode",
 	"website",
-	"images",
-	"assets",
+	// "images",
+	// "assets",
 	"example",
 	"examples",
 	"coverage",
 	".nyc_output",
 	".circleci",
 	".github",
+	"man",
+	// "features",
+	".git",
 }
 
 // DefaultExtensions pruned.
@@ -209,7 +213,6 @@ func (p *Pruner) Prune() (*Stats, error) {
 	var stats Stats
 
 	p.startN(runtime.NumCPU())
-	defer p.stop()
 
 	err := filepath.Walk(p.dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -259,6 +262,41 @@ func (p *Pruner) Prune() (*Stats, error) {
 		}
 
 		return nil
+	})
+
+	p.stop()
+
+	if err != nil {
+		return &stats, err
+	}
+
+	err = godirwalk.Walk(p.dir, &godirwalk.Options{
+		Unsorted: true,
+		Callback: func(_ string, _ *godirwalk.Dirent) error { return nil },
+		PostChildrenCallback: func(osPathname string, _ *godirwalk.Dirent) error {
+			s, err := godirwalk.NewScanner(osPathname)
+			if err != nil {
+				return err
+			}
+
+			hasAtLeastOneChild := s.Scan()
+			if err := s.Err(); err != nil {
+				return err
+			}
+
+			if hasAtLeastOneChild {
+				return nil // do not remove directory with at least one child
+			}
+			if osPathname == p.dir {
+				return nil // do not remove directory that was provided top-level directory
+			}
+
+			err = os.Remove(osPathname)
+			if err == nil {
+				stats.FilesRemoved++
+			}
+			return err
+		},
 	})
 
 	return &stats, err
