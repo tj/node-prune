@@ -15,7 +15,7 @@ $ curl -sf https://gobinaries.com/tj/node-prune | sh
 From source:
 
 ```
-$ go get github.com/tj/node-prune
+$ go install github.com/tj/node-prune@latest
 ```
 
 ## Usage
